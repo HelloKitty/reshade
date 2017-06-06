@@ -14,21 +14,11 @@ HOOK_EXPORT int WSAAPI HookWSASend(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferC
 {
 	static const auto trampoline = reshade::hooks::call(&HookWSASend);
 
-	for (DWORD i = 0; i < dwBufferCount; ++i)
-	{
-		InterlockedAdd(&g_network_traffic, lpBuffers[i].len);
-	}
-
 	return trampoline(s, lpBuffers, dwBufferCount, lpNumberOfBytesSent, dwFlags, lpOverlapped, lpCompletionRoutine);
 }
 HOOK_EXPORT int WSAAPI HookWSASendTo(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferCount, LPDWORD lpNumberOfBytesSent, DWORD dwFlags, const struct sockaddr *lpTo, int iToLen, LPWSAOVERLAPPED lpOverlapped, LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine)
 {
 	static const auto trampoline = reshade::hooks::call(&HookWSASendTo);
-
-	for (DWORD i = 0; i < dwBufferCount; ++i)
-	{
-		InterlockedAdd(&g_network_traffic, lpBuffers[i].len);
-	}
 
 	return trampoline(s, lpBuffers, dwBufferCount, lpNumberOfBytesSent, dwFlags, lpTo, iToLen, lpOverlapped, lpCompletionRoutine);
 }
@@ -38,11 +28,6 @@ HOOK_EXPORT int WSAAPI HookWSARecv(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferC
 
 	const auto status = trampoline(s, lpBuffers, dwBufferCount, lpNumberOfBytesRecvd, lpFlags, lpOverlapped, lpCompletionRoutine);
 
-	if (status == 0 && lpNumberOfBytesRecvd != nullptr)
-	{
-		InterlockedAdd(&g_network_traffic, *lpNumberOfBytesRecvd);
-	}
-
 	return status;
 }
 HOOK_EXPORT int WSAAPI HookWSARecvEx(SOCKET s, char *buf, int len, int *flags)
@@ -51,11 +36,6 @@ HOOK_EXPORT int WSAAPI HookWSARecvEx(SOCKET s, char *buf, int len, int *flags)
 
 	const int recieved = trampoline(s, buf, len, flags);
 
-	if (recieved > 0)
-	{
-		InterlockedAdd(&g_network_traffic, recieved);
-	}
-
 	return recieved;
 }
 HOOK_EXPORT int WSAAPI HookWSARecvFrom(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferCount, LPDWORD lpNumberOfBytesRecvd, LPDWORD lpFlags, struct sockaddr *lpFrom, LPINT lpFromlen, LPWSAOVERLAPPED lpOverlapped, LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine)
@@ -63,11 +43,6 @@ HOOK_EXPORT int WSAAPI HookWSARecvFrom(SOCKET s, LPWSABUF lpBuffers, DWORD dwBuf
 	static const auto trampoline = reshade::hooks::call(&HookWSARecvFrom);
 
 	const auto status = trampoline(s, lpBuffers, dwBufferCount, lpNumberOfBytesRecvd, lpFlags, lpFrom, lpFromlen, lpOverlapped, lpCompletionRoutine);
-
-	if (status == 0 && lpNumberOfBytesRecvd != nullptr)
-	{
-		InterlockedAdd(&g_network_traffic, *lpNumberOfBytesRecvd);
-	}
 
 	return status;
 }
