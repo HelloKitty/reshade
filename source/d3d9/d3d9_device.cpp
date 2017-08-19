@@ -236,17 +236,6 @@ HRESULT STDMETHODCALLTYPE Direct3DDevice9::Reset(D3DPRESENT_PARAMETERS *pPresent
 		_auto_depthstencil = nullptr;
 	}
 
-	//Before we reset we should force stencil/depth on
-
-	//Force parameters to enable depth stencil
-	pPresentationParameters->EnableAutoDepthStencil = TRUE;
-	//A nonlockable format that contains 24 bits of depth (in a 24-bit floating-point format - 20E4) and 8 bits of stencil.
-	pPresentationParameters->AutoDepthStencilFormat = D3DFORMAT::D3DFMT_D24S8;
-	pPresentationParameters->SwapEffect = D3DSWAPEFFECT_COPY;
-
-	//Enable the depth buffering through the interface
-	_orig->SetRenderState(D3DRS_ZENABLE, D3DZB_TRUE);
-
 	const HRESULT hr = _orig->Reset(pPresentationParameters);
 
 	if (FAILED(hr))
@@ -936,17 +925,6 @@ HRESULT STDMETHODCALLTYPE Direct3DDevice9::ResetEx(D3DPRESENT_PARAMETERS *pPrese
 		_auto_depthstencil->Release();
 		_auto_depthstencil = nullptr;
 	}
-
-	//Before we reset we should force stencil/depth on
-
-	//Force parameters to enable depth stencil
-	pPresentationParameters->EnableAutoDepthStencil = TRUE;
-	//A nonlockable format that contains 24 bits of depth (in a 24-bit floating-point format - 20E4) and 8 bits of stencil.
-	pPresentationParameters->AutoDepthStencilFormat = D3DFORMAT::D3DFMT_D24S8;
-	pPresentationParameters->SwapEffect = D3DSWAPEFFECT_COPY;
-
-	//Enable the depth buffering through the interface
-	_orig->SetRenderState(D3DRS_ZENABLE, D3DZB_TRUE);
 
 	const HRESULT hr = static_cast<IDirect3DDevice9Ex *>(_orig)->ResetEx(pPresentationParameters, pFullscreenDisplayMode);
 

@@ -62,15 +62,6 @@ HRESULT STDMETHODCALLTYPE IDirect3D9_CreateDevice(IDirect3D9 *pD3D, UINT Adapter
 		BehaviorFlags = (BehaviorFlags & ~D3DCREATE_SOFTWARE_VERTEXPROCESSING) | D3DCREATE_MIXED_VERTEXPROCESSING;
 	}
 
-	//Force parameters to enable depth stencil
-	pPresentationParameters->EnableAutoDepthStencil = TRUE;
-	//A nonlockable format that contains 24 bits of depth (in a 24-bit floating-point format - 20E4) and 8 bits of stencil.
-	pPresentationParameters->AutoDepthStencilFormat = D3DFORMAT::D3DFMT_D24S8;
-	pPresentationParameters->SwapEffect = D3DSWAPEFFECT_COPY;
-
-	//Must enable depth buffering on the device
-	(*ppReturnedDeviceInterface)->SetRenderState(D3DRS_ZENABLE, D3DZB_TRUE);
-
 	const HRESULT hr = reshade::hooks::call(&IDirect3D9_CreateDevice)(pD3D, Adapter, DeviceType, hFocusWindow, BehaviorFlags, pPresentationParameters, ppReturnedDeviceInterface);
 
 	if (FAILED(hr))
@@ -151,15 +142,6 @@ HRESULT STDMETHODCALLTYPE IDirect3D9Ex_CreateDeviceEx(IDirect3D9Ex *pD3D, UINT A
 
 		BehaviorFlags = (BehaviorFlags & ~D3DCREATE_SOFTWARE_VERTEXPROCESSING) | D3DCREATE_MIXED_VERTEXPROCESSING;
 	}
-
-	//Force parameters to enable depth stencil
-	pPresentationParameters->EnableAutoDepthStencil = TRUE;
-	//A nonlockable format that contains 24 bits of depth (in a 24-bit floating-point format - 20E4) and 8 bits of stencil.
-	pPresentationParameters->AutoDepthStencilFormat = D3DFORMAT::D3DFMT_D24S8;
-	pPresentationParameters->SwapEffect = D3DSWAPEFFECT_COPY;
-
-	//Must enable depth buffering on the device
-	(*ppReturnedDeviceInterface)->SetRenderState(D3DRS_ZENABLE, D3DZB_TRUE);
 
 	const HRESULT hr = reshade::hooks::call(&IDirect3D9Ex_CreateDeviceEx)(pD3D, Adapter, DeviceType, hFocusWindow, BehaviorFlags, pPresentationParameters, pFullscreenDisplayMode, ppReturnedDeviceInterface);
 
